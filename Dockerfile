@@ -2,23 +2,19 @@
 FROM quay.io/jupyterhub/jupyterhub:5.2.1
 LABEL maintainer="moweng<changtao86@163.com>"
 
-# 安装vim和jupyterlab-language-pack-zh-CN插件、代码补全插件
+# 安装系统级别的依赖
 RUN apt-get update && \
-    apt-get install -y vim && \
-    apt-get install -y sqlite3 && \
-    pip install notebook --upgrade -i https://mirrors.aliyun.com/pypi/simple && \
-    pip install jupyterlab-language-pack-zh-CN -i https://mirrors.aliyun.com/pypi/simple && \
-    pip install jupyter_scheduler==2.10.0 -i https://mirrors.aliyun.com/pypi/simple && \
-    pip install -i https://mirrors.aliyun.com/pypi/simple/ jupyterlab-lsp==5.1.0 && \
-    pip install -i https://mirrors.aliyun.com/pypi/simple/ python-lsp-server[all]
+    apt-get install -y vim sqlite3 && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
-# 安装基础数据科学库以及AKShare
-RUN pip install -i https://mirrors.aliyun.com/pypi/simple/ numpy && \
-    pip install -i https://mirrors.aliyun.com/pypi/simple/ pandas && \
-    pip install -i https://mirrors.aliyun.com/pypi/simple/ pymysql && \
-    pip install -i https://mirrors.aliyun.com/pypi/simple/ --trusted-host mirrors.aliyun.com duckdb --upgrade && \
-    pip install -i https://mirrors.aliyun.com/pypi/simple/ pyecharts && \
-    pip install -i https://mirrors.aliyun.com/pypi/simple/ akshare --upgrade
+# 将requirements.txt复制到容器中，并创建一个标记文件以强制刷新缓存
+COPY requirements.txt /tmp/requirements.txt
+RUN touch /tmp/.force-reinstall
+
+# 安装所有Python包
+RUN pip install -i https://mirrors.aliyun.com/pypi/simple/ -r /tmp/requirements.txt && \
+    rm /tmp/requirements.txt
 
 # 生成默认的jupyterhub配置文件
 RUN mkdir -p /srv/jupyterhub && \
