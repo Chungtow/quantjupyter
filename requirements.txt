@@ -8,7 +8,7 @@ pandas==2.2.3
 pymysql==1.1.1
 duckdb==1.2.1
 pyecharts==2.0.8
-akshare==1.16.47
+akshare==1.16.81
 streamlit==1.27.0
 streamlit_jupyter==0.2.1
 Werkzeug==0.11.15

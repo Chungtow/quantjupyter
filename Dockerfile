@@ -4,9 +4,14 @@ LABEL maintainer="moweng<changtao86@163.com>"
 
 # 安装系统级别的依赖
 RUN apt-get update && \
-    apt-get install -y vim sqlite3 && \
+    apt-get install -y vim sqlite3 tzdata && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
+
+# 配置时区为 Asia/Shanghai
+RUN echo 'Asia/Shanghai' > /etc/timezone && \
+    ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && \
+    dpkg-reconfigure --frontend noninteractive tzdata
 
 # 将requirements.txt复制到容器中，并创建一个标记文件以强制刷新缓存
 COPY requirements.txt /tmp/requirements.txt
