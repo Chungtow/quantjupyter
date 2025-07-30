@@ -38,6 +38,8 @@ RUN touch /tmp/.force-reinstall
 RUN pip install -i https://mirrors.aliyun.com/pypi/simple/ -r /tmp/requirements.txt && \
     rm /tmp/requirements.txt
 
+RUN pip install torch==2.7.1+cpu torchvision==0.22.1+cpu torchaudio==2.7.1+cpu --index-url https://download.pytorch.org/whl/cpu
+
 # 生成默认的jupyterhub配置文件
 RUN mkdir -p /srv/jupyterhub && \
     jupyterhub --generate-config -f /srv/jupyterhub/jupyterhub_config.py
@@ -53,8 +55,17 @@ RUN cat /tmp/jupyterhub_config.txt >> /srv/jupyterhub/jupyterhub_config.py && \
 COPY start.sh /start.sh
 RUN chmod +x /start.sh
 
-# 暴露必要的端口
-EXPOSE 8000 
+# 暴露JupyterLab默认端口
+EXPOSE 8000
+
+# 暴露Streamlit默认端口
+EXPOSE 8501
+
+# 暴露Flask应用默认端口
+EXPOSE 5000
+
+# 暴露TensorBoard默认端口
+EXPOSE 6006
 
 # 设置容器启动时执行/start.sh脚本
 CMD ["/start.sh"]
