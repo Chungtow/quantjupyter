@@ -4,7 +4,9 @@ LABEL maintainer="moweng<changtao86@163.com>"
 
 # 安装系统级别的依赖
 RUN apt-get update && \
-    apt-get install -y vim sqlite3 tzdata python3-dev build-essential libopenblas-dev && \
+    apt-get install -y \
+        vim sqlite3 tzdata python3-dev build-essential libopenblas-dev \
+        tree openjdk-8-jdk && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
@@ -27,6 +29,9 @@ RUN tar -xzf ta-lib-0.6.4-src.tar.gz && \
     rm -rf ta-lib-0.6.4 ta-lib-0.6.4-src.tar.gz
 
 # 设置环境变量
+ENV JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
+ENV PATH=$JAVA_HOME/bin:$PATH
+
 ENV TA_INCLUDE_PATH=/usr/include
 ENV TA_LIBRARY_PATH=/usr/lib
 
@@ -66,6 +71,9 @@ EXPOSE 5000
 
 # 暴露TensorBoard默认端口
 EXPOSE 6006
+
+# 暴露Spark Job端口
+EXPOSE 4040
 
 # 设置容器启动时执行/start.sh脚本
 CMD ["/start.sh"]
